@@ -1,11 +1,7 @@
-Don Knuth
-Alan Turing
-Ada Lovelace
-Charles Babbage
-John von Neumann
-Grace Hopper
-Bill Gates
-Tim Berners-Lee
-Alan Kay
-Linus Torvalds
-Alonzo Church
+Don
+Alan
+Ada
+Charles
+John
+Grace
+Bill

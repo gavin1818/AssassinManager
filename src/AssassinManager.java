@@ -1,69 +1,79 @@
+import java.lang.*;
+import java.util.*;
+
 public class AssassinManager {
     private AssassinNode headKillRing;
     private AssassinNode headGraveyard;
+    private AssassinNode currGraveyard;
     public AssassinManager(List<String> players) throws IllegalArgumentException{
-        if(players.size()==0||players==null) throw IllegalArgumentException("The array is incorrect!");
+        if(players.size()==0||players==null) throw new IllegalArgumentException("The array is incorrect!");
         headKillRing = new AssassinNode(players.get(0));
         headGraveyard = new AssassinNode("dummy");
-        AssassinNode curr = headKillRing.next;
+        currGraveyard = headGraveyard;
+        AssassinNode curr = headKillRing;
         for(int i=1;i<players.size();i++){
-            curr=new AssassinNode(players.get(i));
+            curr.next=new AssassinNode(players.get(i));
             curr=curr.next;
         }
-        playerArray.length==1?curr=null:curr=headKillRing;
+        if(players.size()>1){
+            curr.next=headKillRing;
+        }
     }
     public void printKillRing(){
-        int indent=4;
         AssassinNode curr=headKillRing;
-        for (curr ;curr.next!=headKillRing&&curr.next!=null;curr=curr.next) {    
-            System.out.print('\t' for each indent);
-            System.out.println(curr.name+" is stalking "+curr.next.name);
+        while (curr.next!=headKillRing) {    
+            System.out.println("    "+curr.name+" is stalking "+curr.next.name);
+            curr=curr.next;
         }
         if(curr.next!=null){
-            System.out.print('\t' for each indent);
-            System.out.println(curr.name+" is stalking "+curr.next.name);
+            System.out.println("    "+curr.name+" is stalking "+curr.next.name);
         }
-
     }
     public void printGraveyard(){
-        int indent=4;
         AssassinNode curr=headGraveyard;
-        for (curr.next ;curr.next!=null;curr=curr.next) {    
-            System.out.print('\t' for each indent);
-            System.out.println(curr.next.name+" was killed by "+curr.next.killer);
+        while(curr.next!=null) {    
+            System.out.println("    "+curr.next.name+" was killed by "+curr.next.killer);
+            curr=curr.next;
         }
     }
     public boolean killRingContains(String name){
-        for(AssassinNode curr = headKillRing;curr.next!=headKillRing;curr=curr.next){
-            if(curr.next.name==name) return true;
+        AssassinNode curr = headKillRing;
+        while(curr.next!=headKillRing){//in order to make sure the loop will not check forever, when curr is the last element in the linkedlist, the loop quite.
+            if(curr.name.equals(name)) return true;
+            curr=curr.next;
         }
+        if(curr.name.equals(name)) return true; //check the last element which is ignored by the while loop
+
         return false;
     }
     public boolean graveyardContains(String name){
         for(AssassinNode curr = headGraveyard;curr!=null;curr=curr.next){
-            if(curr.name==name) return true;
+            if(curr.name.equals(name)) return true;
         }
         return false;
     }
     public boolean isGameOver(){
-        return headKillRing.next==null?true:false; 
+        return headKillRing.next==headKillRing?true:false; 
     }
     public String winner(){
         return headKillRing.name;
     }
     public void kill(String name){
         if(headKillRing.next==null) return;
-        if(!killRingContains()) return;
+        if(!killRingContains(name)) return;
         AssassinNode curr = headKillRing;
         //check the headKillRing.next first, beacuse it is a cycle, headKillRing will be checked as the last.
         while(true){
-            if(curr.next.name==name){
+            if(curr.next.name.equals(name)){
                 if(curr.next==headKillRing){
                     headKillRing=headKillRing.next;
                 }
                 curr.next.killer=curr.name;
-                headGraveyard.next=curr.next;
-                curr.next=curr.next.next;
+                currGraveyard.next=curr.next;
+                currGraveyard = currGraveyard.next;
+                AssassinNode temp = curr.next.next;
+                curr.next.next=null;
+                curr.next=temp;
                 return;
             }
             curr=curr.next;
